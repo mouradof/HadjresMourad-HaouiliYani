@@ -6,6 +6,8 @@ import com.example.project_party.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -19,8 +21,12 @@ public class UserService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    public void registerUser(Users user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public void registerUser(String username, String password, Integer skillLevel, Map<String, String> preferences) {
+        Users user = new Users();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setSkillLevel(skillLevel);
+        user.setPreferences(preferences);
         userRepository.save(user);
     }
 
@@ -31,6 +37,10 @@ public class UserService {
             return jwtUtil.generateToken(username);
         }
         throw new RuntimeException("Invalid username or password");
+    }
+
+    public Optional<Users> findById(Long id) {
+        return userRepository.findById(id);
     }
 
 }

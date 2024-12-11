@@ -1,45 +1,14 @@
-package com.example.project_party.model;
+package com.example.project_party.dto;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import java.util.Map;
 
-@Entity
-@Table(name = "users")
-public class Users {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(unique = true, nullable = false)
-    @Size(min = 3, max = 255)
+public class RegisterRequest {
     private String username;
-
-    @Column(nullable = false)
-    @Size(min = 8, max = 255)
     private String password;
-
-    @Column(nullable = false)
-    @Min(1)
-    @Max(10)
     private Integer skillLevel;
-
-    @ElementCollection
-    @CollectionTable(name = "user_preferences", joinColumns = @JoinColumn(name = "user_id"))
-    @MapKeyColumn(name = "preference_key")
-    @Column(name = "preference_value")
     private Map<String, String> preferences;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Getters et Setters
     public String getUsername() {
         return username;
     }
