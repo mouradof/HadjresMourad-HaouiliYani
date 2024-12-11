@@ -16,10 +16,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable) // Désactiver CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Autoriser les requêtes publiques pour /auth/**
+                        .requestMatchers(
+                                "/auth/**", // Routes publiques (ajustez selon vos besoins)
+                                "/v3/api-docs/**", // Swagger documentation
+                                "/swagger-ui/**", // Swagger UI
+                                "/swagger-ui.html" // Swagger UI HTML
+                        ).permitAll() // Autoriser les requêtes publiques pour ces routes
                         .anyRequest().authenticated() // Nécessiter une authentification pour toutes les autres requêtes
                 )
-                .httpBasic(Customizer.withDefaults()); // Configurer HTTP Basic sans dépréciation
+                .httpBasic(Customizer.withDefaults()); // Configurer HTTP Basic
         return http.build();
     }
 
