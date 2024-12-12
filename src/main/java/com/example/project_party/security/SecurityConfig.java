@@ -14,20 +14,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable) // Désactiver CSRF
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/auth/**", // Routes publiques (ajustez selon vos besoins)
-                                "/v3/api-docs/**", // Swagger documentation
-                                "/swagger-ui/**", // Swagger UI
-                                "/swagger-ui.html" // Swagger UI HTML
-                        ).permitAll() // Autoriser les requêtes publiques pour ces routes
-                        .anyRequest().authenticated() // Nécessiter une authentification pour toutes les autres requêtes
-                )
-                .httpBasic(Customizer.withDefaults()); // Configurer HTTP Basic
+        http.csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .httpBasic(Customizer.withDefaults());
+        System.out.println("Security Filter Chain configured");
         return http.build();
     }
-
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

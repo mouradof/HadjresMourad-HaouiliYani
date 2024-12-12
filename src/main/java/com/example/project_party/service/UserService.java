@@ -24,9 +24,12 @@ public class UserService {
     public void registerUser(String username, String password, Integer skillLevel, Map<String, String> preferences) {
         Users user = new Users();
         user.setUsername(username);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password)); // N'oubliez pas d'encoder le mot de passe
         user.setSkillLevel(skillLevel);
         user.setPreferences(preferences);
+
+        System.out.println("Saving user: " + user.getUsername());
+
         userRepository.save(user);
     }
 

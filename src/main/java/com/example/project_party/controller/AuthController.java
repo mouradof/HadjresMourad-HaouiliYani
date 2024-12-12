@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/auth")
@@ -21,9 +20,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        Map<String, String> preferences = request.getPreferences();
-        userService.registerUser(request.getUsername(), request.getPassword(), request.getSkillLevel(), preferences);
-        return ResponseEntity.ok("User registered successfully");
+        try {
+            Map<String, String> preferences = request.getPreferences();
+            userService.registerUser(request.getUsername(), request.getPassword(), request.getSkillLevel(),
+                    preferences);
+            return ResponseEntity.ok("User registered successfully");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @PostMapping("/login")
