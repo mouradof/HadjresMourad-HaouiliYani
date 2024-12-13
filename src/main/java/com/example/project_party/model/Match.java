@@ -13,7 +13,7 @@ public class Match {
     @Column(nullable = false)
     private String type; // e.g., 1v1 or 5v5
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "match_id")
     private List<Player> players;
 

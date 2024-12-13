@@ -14,20 +14,20 @@ public class Player {
     @Column(nullable = false)
     private String username;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
     @Column
     private int skillLevel;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "player_preferences", joinColumns = @JoinColumn(name = "player_id"))
     @MapKeyColumn(name = "preference_key")
     @Column(name = "preference_value")
     private Map<String, String> preferences;
 
-    // Getters et Setters
+    // Getters and Setters
     public Long getId() {
         return id;
     }

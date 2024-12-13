@@ -5,8 +5,12 @@ import com.example.project_party.model.Player;
 import com.example.project_party.repository.MatchRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +24,16 @@ public class MatchmakingService {
     @Autowired
     private MatchRepository matchRepository;
 
+    @Cacheable(value = "playersCache", key = "#players.hashCode()")
     public void matchPlayers(List<Player> players) {
         ObjectMapper objectMapper = new ObjectMapper();
         for (Player player : players) {
             int skillLevel = player.getSkillLevel();
             try {
-                var preferences = objectMapper.readValue(player.getPreferences(), Map.class);
-
+                Map<String, Object> preferences = objectMapper.readValue(
+                        player.getPreferences(),
+                        Map.class
+                );
                 System.out.println("Player skill level: " + skillLevel);
                 System.out.println("Player preferences: " + preferences);
             } catch (Exception e) {
@@ -35,6 +42,7 @@ public class MatchmakingService {
         }
     }
 
+    @Cacheable(value = "matchesCache", key = "#matchRequest.id")
     public Match createMatch(Match matchRequest) {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Player> players = new ArrayList<>();
@@ -42,7 +50,10 @@ public class MatchmakingService {
 
         for (Player player : availablePlayers) {
             try {
-                var preferences = objectMapper.readValue(player.getPreferences(), Map.class);
+                Map preferences = objectMapper.readValue(
+                        player.getPreferences(),
+                        Map.class
+                );
 
                 if (Math.abs(player.getSkillLevel() - matchRequest.getRequiredSkillLevel()) <= 1) {
                     if (preferences.get("maxDistance") != null &&
@@ -69,5 +80,9 @@ public class MatchmakingService {
     public Match getMatch(Long id) {
         return matchRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Match not found"));
+    }
+
+    public Page<Match> getAllMatches(Pageable pageable) {
+        return matchRepository.findAll((org.springframework.data.domain.Pageable) pageable);
     }
 }

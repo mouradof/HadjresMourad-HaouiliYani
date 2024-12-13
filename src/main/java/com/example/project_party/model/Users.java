@@ -25,7 +25,7 @@ public class Users {
     @Max(10)
     private Integer skillLevel;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "user_preferences", joinColumns = @JoinColumn(name = "user_id"))
     @MapKeyColumn(name = "preference_key")
     @Column(name = "preference_value")

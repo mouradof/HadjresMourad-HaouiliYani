@@ -1,13 +1,14 @@
 package com.example.project_party.controller;
 
-import com.example.project_party.model.Player;
 import com.example.project_party.model.Users;
-import com.example.project_party.service.PlayerService;
 import com.example.project_party.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,33 +19,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private PlayerService playerService;
-
     @GetMapping
-    public ResponseEntity<List<Users>> getAllUsers() {
-        List<Users> users = userService.findAll();
+    public ResponseEntity<Page<Users>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<Users> users = userService.getAllUsers((Pageable) PageRequest.of(page, size));
         users.forEach(user -> user.setPassword(null));
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Users> getUserById(@PathVariable Long id) {
-        Optional<Users> user = userService.findById(id);
-        if (user.isPresent()) {
-            Users foundUser = user.get();
-            foundUser.setPassword(null);
-            return ResponseEntity.ok(foundUser);
-        }
-        return ResponseEntity.notFound().build();
+        return userService.findById(id)
+                .map(user -> {
+                    user.setPassword(null);
+                    return ResponseEntity.ok(user);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
-
-    @PostMapping("/create")
-    public ResponseEntity<List<Player>> createPlayers(@RequestBody List<Player> players) {
-        List<Player> savedPlayers = players.stream()
-                .map(playerService::save)
-                .toList();
-        return ResponseEntity.ok(savedPlayers);
-    }
-
 }

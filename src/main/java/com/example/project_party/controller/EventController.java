@@ -6,10 +6,12 @@ import com.example.project_party.model.Users;
 import com.example.project_party.service.EventService;
 import com.example.project_party.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.awt.print.Pageable;
 
 @RestController
 @RequestMapping("/events")
@@ -19,7 +21,21 @@ public class EventController {
     private EventService eventService;
 
     @Autowired
-    private UserService userService; // Injection correcte du service UserService
+    private UserService userService;
+
+    @GetMapping
+    public ResponseEntity<Page<EventDTO>> getAllEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<EventDTO> events = eventService.getAllEvents((Pageable) PageRequest.of(page, size))
+                .map(EventDTO::new);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+        return ResponseEntity.ok(eventService.getEventById(id));
+    }
 
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
@@ -27,7 +43,6 @@ public class EventController {
             throw new RuntimeException("Organizer ID is required");
         }
 
-        // Récupérer uniquement l'utilisateur par ID
         Users organizer = userService.findById(event.getOrganizer().getId())
                 .orElseThrow(() -> new RuntimeException("Organizer not found"));
 
@@ -38,7 +53,6 @@ public class EventController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EventDTO> updateEvent(@PathVariable Long id, @RequestBody Event event) {
-        // Valider la présence de l'organisateur
         if (event.getOrganizer() == null || event.getOrganizer().getId() == null) {
             throw new RuntimeException("Organizer ID is required");
         }
@@ -48,10 +62,8 @@ public class EventController {
 
         event.setOrganizer(organizer);
 
-        // Mettre à jour l'événement
         Event updatedEvent = eventService.updateEvent(id, event);
 
-        // Retourner l'EventDTO
         return ResponseEntity.ok(new EventDTO(updatedEvent));
     }
 
@@ -59,19 +71,5 @@ public class EventController {
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping
-    public ResponseEntity<List<EventDTO>> getAllEvents() {
-        List<EventDTO> events = eventService.getAllEvents()
-                .stream()
-                .map(EventDTO::new) // Convertir chaque Event en EventDTO
-                .toList();
-        return ResponseEntity.ok(events);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.getEventById(id));
     }
 }
