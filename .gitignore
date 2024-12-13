@@ -1,0 +1,79 @@
+# General files
+.DS_Store
+Thumbs.db
+
+# Build directories and files
+target/
+build/
+dist/
+out/
+
+# Maven
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+**/src/main/**/target/
+**/src/test/**/target/
+
+# Gradle
+.gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# NPM / Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Logs
+*.log
+*.log.*
+
+# OS-specific files
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# IDE and editor settings
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse / STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### Visual Studio Code ###
+.vscode/
+
+# Scripts and other generated files
+script.sh
+result.txt
+makefile
+*.sh~
+*.txt~
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.~undo-tree~
+*.bak
+*.swp
+*.swo
