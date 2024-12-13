@@ -1,24 +1,51 @@
 <template>
   <div class="input-container">
     <label :for="label" class="input-label">{{ label }}</label>
-    <input
-      :type="type"
-      :id="label"
-      :placeholder="placeholder"
-      :value="modelValue"
-      @input="$emit('update:modelValue', $event.target.value)"
-      class="input-field"
-    />
+    <template v-if="type === 'textarea'">
+      <textarea
+        :id="label"
+        :placeholder="placeholder"
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+        class="input-field textarea"
+      ></textarea>
+    </template>
+    <template v-else>
+      <input
+        :type="type"
+        :id="label"
+        :placeholder="placeholder"
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+        class="input-field"
+      />
+    </template>
   </div>
 </template>
 
 <script setup>
-defineProps(['label', 'placeholder', 'type', 'modelValue']);
-defineEmits(['update:modelValue']);
+const props = defineProps({
+  label: {
+    type: String,
+    required: true,
+  },
+  placeholder: {
+    type: String,
+    default: '',
+  },
+  type: {
+    type: String,
+    default: 'text', // Peut être 'text', 'password', 'number', 'textarea', etc.
+  },
+  modelValue: {
+    type: [String, Number],
+    default: '',
+  },
+});
+const emit = defineEmits(['update:modelValue']);
 </script>
 
 <style scoped>
-/* Conteneur du champ d'entrée */
 .input-container {
   margin-bottom: 20px;
   display: flex;
@@ -26,7 +53,6 @@ defineEmits(['update:modelValue']);
   gap: 5px;
 }
 
-/* Label du champ */
 .input-label {
   font-size: 0.9rem;
   font-weight: bold;
@@ -34,7 +60,6 @@ defineEmits(['update:modelValue']);
   margin-bottom: 5px;
 }
 
-/* Champ d'entrée */
 .input-field {
   padding: 10px 15px;
   font-size: 1rem;
@@ -52,5 +77,10 @@ defineEmits(['update:modelValue']);
 .input-field::placeholder {
   color: #aaa;
   font-style: italic;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
 }
 </style>

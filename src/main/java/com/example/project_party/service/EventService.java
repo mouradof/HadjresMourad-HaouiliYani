@@ -18,12 +18,18 @@ public class EventService {
     }
 
     public Event updateEvent(Long id, Event updatedEvent) {
+        // Rechercher l'événement existant
         Event existingEvent = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // Mettre à jour les champs
         existingEvent.setName(updatedEvent.getName());
         existingEvent.setDate(updatedEvent.getDate());
         existingEvent.setLocation(updatedEvent.getLocation());
         existingEvent.setDescription(updatedEvent.getDescription());
+        existingEvent.setOrganizer(updatedEvent.getOrganizer());
+
+        // Sauvegarder les modifications
         return eventRepository.save(existingEvent);
     }
 

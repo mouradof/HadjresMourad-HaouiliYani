@@ -1,29 +1,23 @@
+// A. Login Page (pages/Login.vue)
 <template>
   <div class="login-container">
     <h1>Connexion</h1>
     <form @submit.prevent="handleLogin">
-      <InputField
-        v-model="form.username"
-        label="Nom d'utilisateur"
-        placeholder="Entrez votre nom d'utilisateur"
-        type="text"
-      />
-      <InputField
-        v-model="form.password"
-        label="Mot de passe"
-        placeholder="Entrez votre mot de passe"
-        type="password"
-      />
-      <Button :isLoading="loading" label="Se connecter" />
+      <InputField v-model="form.username" label="Nom d'utilisateur" placeholder="Entrez votre nom d'utilisateur" type="text" />
+      <InputField v-model="form.password" label="Mot de passe" placeholder="Entrez votre mot de passe" type="password" />
+      <Button :isLoading="loading" label="Se connecter" type="submit" />
     </form>
     <p v-if="error" class="error-message">{{ error }}</p>
+    <p class="redirect-message">
+      Pas encore de compte ? <nuxt-link to="/register">Inscrivez-vous ici</nuxt-link>.
+    </p>
   </div>
 </template>
 
 <script>
 import InputField from '@/components/InputField.vue';
 import Button from '@/components/Button.vue';
-import axios from 'axios';
+import api from '@/services/api';
 
 export default {
   components: { InputField, Button },
@@ -39,27 +33,15 @@ export default {
   },
   methods: {
     async handleLogin() {
-      console.log('Tentative de connexion avec:', this.form);
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.post('http://localhost:8080/auth/login', this.form);
-
-        if (response.data) {
-          const token = response.data; // Assurez-vous que le serveur retourne bien le token
-          console.log('Connexion réussie, token reçu:', token);
-
-          // Stocke le token dans localStorage
-          localStorage.setItem('token', token);
-
-          console.log('Redirection vers la page d’accueil...');
-          this.$router.push('/');
-        } else {
-          throw new Error('Aucun token reçu');
-        }
+        const response = await api.post('/auth/login', this.form);
+        localStorage.setItem('jwt', response.data);
+        localStorage.setItem('loggedIn', 'true');
+        this.$router.push('/');
       } catch (err) {
-        console.error('Erreur lors de la connexion:', err);
-        this.error = err.response?.data?.message || 'Échec de la connexion';
+        this.error = 'Échec de la connexion.';
       } finally {
         this.loading = false;
       }
@@ -71,12 +53,11 @@ export default {
 <style scoped>
 .login-container {
   max-width: 400px;
-  margin: auto;
+  margin: 50px auto;
   padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
-}
-.error-message {
-  color: red;
-  margin-top: 10px;
 }
 </style>

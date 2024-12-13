@@ -1,35 +1,27 @@
-package com.example.project_party.model;
+package com.example.project_party.dto;
 
-import jakarta.persistence.*;
+import com.example.project_party.model.Event;
+
 import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@Entity
-@Table(name = "events")
-public class Event {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class EventDTO {
     private Long id;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
     private LocalDateTime date;
-
-    @Column(nullable = false)
     private String location;
-
-    @Column(nullable = false)
     private String description;
+    private Long organizerId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "organizer_id", nullable = false)
-    private Users organizer;
+    public EventDTO(Event event) {
+        this.id = event.getId();
+        this.name = event.getName();
+        this.date = event.getDate();
+        this.location = event.getLocation();
+        this.description = event.getDescription();
+        this.organizerId = event.getOrganizer() != null ? event.getOrganizer().getId() : null;
+    }
 
-    // Getters and Setters
+    // Getters et setters
     public Long getId() {
         return id;
     }
@@ -70,11 +62,11 @@ public class Event {
         this.description = description;
     }
 
-    public Users getOrganizer() {
-        return organizer;
+    public Long getOrganizerId() {
+        return organizerId;
     }
 
-    public void setOrganizer(Users organizer) {
-        this.organizer = organizer;
+    public void setOrganizerId(Long organizerId) {
+        this.organizerId = organizerId;
     }
 }
