@@ -1,7 +1,8 @@
 package com.example.project_party.model;
 
+import com.fasterxml.jackson.core.JsonParser;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import java.util.Map;
 
 @Entity
 public class Player {
@@ -11,14 +12,22 @@ public class Player {
     private Long id;
 
     @Column(nullable = false)
-    @Size(min = 3, max = 255)
     private String username;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-    // Getters and Setters
+    @Column
+    private int skillLevel;
+
+    @ElementCollection
+    @CollectionTable(name = "player_preferences", joinColumns = @JoinColumn(name = "player_id"))
+    @MapKeyColumn(name = "preference_key")
+    @Column(name = "preference_value")
+    private Map<String, String> preferences;
+
+    // Getters et Setters
     public Long getId() {
         return id;
     }
@@ -41,5 +50,21 @@ public class Player {
 
     public void setUser(Users user) {
         this.user = user;
+    }
+
+    public int getSkillLevel() {
+        return skillLevel;
+    }
+
+    public void setSkillLevel(int skillLevel) {
+        this.skillLevel = skillLevel;
+    }
+
+    public JsonParser getPreferences() {
+        return (JsonParser) preferences;
+    }
+
+    public void setPreferences(Map<String, String> preferences) {
+        this.preferences = preferences;
     }
 }

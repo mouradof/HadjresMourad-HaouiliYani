@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
@@ -19,16 +21,12 @@ public class PlayerController {
     private PlayerService playerService;
 
     @PostMapping("/create")
-    public ResponseEntity<Player> createPlayer(@RequestBody Player playerRequest) {
-        Users user = userService.findById(playerRequest.getUser().getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Player player = new Player();
-        player.setUsername(playerRequest.getUsername());
-        player.setUser(user);
-
-        playerService.savePlayer(player);
-
-        return ResponseEntity.ok(player);
+    public ResponseEntity<List<Player>> createPlayers(@RequestBody List<Player> players) {
+        System.out.println("Received players: " + players);
+        List<Player> savedPlayers = players.stream()
+                .map(playerService::save)
+                .toList();
+        return ResponseEntity.ok(savedPlayers);
     }
+
 }

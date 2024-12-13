@@ -1,6 +1,8 @@
 package com.example.project_party.controller;
 
+import com.example.project_party.model.Player;
 import com.example.project_party.model.Users;
+import com.example.project_party.service.PlayerService;
 import com.example.project_party.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PlayerService playerService;
 
     @GetMapping
     public ResponseEntity<List<Users>> getAllUsers() {
@@ -33,4 +38,13 @@ public class UserController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<List<Player>> createPlayers(@RequestBody List<Player> players) {
+        List<Player> savedPlayers = players.stream()
+                .map(playerService::save)
+                .toList();
+        return ResponseEntity.ok(savedPlayers);
+    }
+
 }

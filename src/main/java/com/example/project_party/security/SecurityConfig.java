@@ -15,9 +15,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                );
-        System.out.println("Security Filter Chain configured with no restrictions");
+                        .requestMatchers("/users/create", "/actuator/**").permitAll()
+                        .requestMatchers("/players/create").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable);
+        System.out.println("Security Filter Chain configured with specific route permissions");
         return http.build();
     }
 
