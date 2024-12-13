@@ -20,16 +20,13 @@ public class PlayerController {
 
     @PostMapping("/create")
     public ResponseEntity<Player> createPlayer(@RequestBody Player playerRequest) {
-        // Vérification de l'existence de l'utilisateur
         Users user = userService.findById(playerRequest.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Créer un joueur et l'associer à l'utilisateur existant
         Player player = new Player();
         player.setUsername(playerRequest.getUsername());
         player.setUser(user);
 
-        // Sauvegarder le joueur dans la base de données
         playerService.savePlayer(player);
 
         return ResponseEntity.ok(player);

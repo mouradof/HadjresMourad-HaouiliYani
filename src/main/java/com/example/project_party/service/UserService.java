@@ -6,6 +6,9 @@ import com.example.project_party.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.dao.DataIntegrityViolationException;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,15 +25,23 @@ public class UserService {
     private JwtUtil jwtUtil;
 
     public void registerUser(String username, String password, Integer skillLevel, Map<String, String> preferences) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new RuntimeException("Username '" + username + "' already exists");
+        }
+
         Users user = new Users();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password)); // N'oubliez pas d'encoder le mot de passe
+        user.setPassword(passwordEncoder.encode(password));
         user.setSkillLevel(skillLevel);
         user.setPreferences(preferences);
 
         System.out.println("Saving user: " + user.getUsername());
 
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Failed to register user: Username already exists or another issue occurred.");
+        }
     }
 
     public String authenticate(String username, String password) {
@@ -46,4 +57,7 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public List<Users> findAll() {
+        return userRepository.findAll();
+    }
 }
